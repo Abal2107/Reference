@@ -1,0 +1,200 @@
+select * from tmp_ref_lc_pc_cods;
+
+
+select * from ref_locality_post_cods;
+desc ref_locality_post_cods;
+
+create table tmp_ref_lc_pc_cods(LOCALITY_ID NUMBER(9), POST_CODE varchar2(20), PRIM_LOCALITY_IND varchar2(1), CTRL_DATA_LAST_OPER_ID NUMBER(6), CTRL_DATA_LAST_OPER_DATE DATE);
+
+desc tmp_ref_lc_pc_cods;
+
+
+
+declare
+   type locality_ID IS VARRAY(34) OF NUMBER(9); 
+   type post_CODS IS VARRAY(34) OF NUMBER(20); 
+   pc post_CODS; 
+   lid locality_ID; 
+   total integer;
+begin
+   lid := locality_ID(2380,8710,17895,20345,24630,26814,28525,29130,31025,31265,32445,36940,40590,54290,83775,83780,83785,83790,83795,88483,93480,94560,96670,1000524,1000628,1000738,1000857,1000988,1001103,1001466,1001575,1001707,1001744);
+   pc := post_CODS(2822,2822,2372,2817,4314,4300,4726,4300,4884,4314,4314,4300,5719,3026,4314,4314,4314,4314,4314,873,2582,2817,4314,5723,5440,2083,2575,873,2372,5440,5440,5715,5440);
+   total := lid.count;
+   FOR i in 1 .. total LOOP 
+      execute immediate q'[insert into tmp_ref_lc_pc_cods values(:var1,:var2,'Y',89987,sysdate)]' using lid(i),pc(i);  
+   END LOOP; 
+END;
+
+
+
+select * from tmp_ref_lc_pc_cods;
+
+
+
+
+/*
+DECLARE  
+   l_id temp_lc_pc_count.locality_id%type;  
+   p_cd temp_lc_pc_count.output_post_codes%type;  
+   CURSOR t_lcpc is  
+      SELECT locality_id, output_post_codes FROM temp_lc_pc_count;  
+BEGIN  
+   OPEN t_lcpc;  
+   LOOP  
+      FETCH t_lcpc into l_id, p_cd;  
+      EXIT WHEN t_lcpc%notfound;  
+      execute immediate q'[insert into ref_locality_post_cods values(:var1,:var2,'Y',89987,sysdate)]' using l_id,p_cd;  
+   END LOOP;  
+   CLOSE t_lcpc;  
+END;  
+*/
+
+
+/*
+
+
+DECLARE 
+   k  NUMBER := 0;
+   lmt_id lm_lmt_address.lmt_id%type; 
+  type street_directional IS VARRAY(12) OF VARCHAR2(15); 
+  sd street_directional;
+   CURSOR lla is     
+    select lmt_id from lm_lmt_address where lmt_id in (select distinct(lmt_id) from NOT_VALID_STREET_DIRECTION);
+BEGIN
+ sd := street_directional('EX','CN','S','E','W','N','NE','NW','SE','SW','UP','LR');
+   OPEN lla; 
+   LOOP 
+   FETCH lla into lmt_id;
+      k:= k+1;
+      EXIT WHEN lla%notfound; 
+       IF k <= 4 THEN
+         execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(1), lmt_id; 
+        
+       ELSIF (k > 4 and k <=8)  then
+         execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(2), lmt_id;  
+        
+      ELSIF k >8 and k <= 12 then
+         execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(3), lmt_id; 
+        
+      ELSIF k >12 and k <= 16 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(4), lmt_id; 
+        
+      ELSIF k >16 and k <= 20 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(5), lmt_id; 
+        
+      ELSIF k >20 and k <= 24 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(6), lmt_id; 
+        
+      ELSIF k >24 and k <= 28 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(7), lmt_id; 
+        
+      ELSIF k >28 and k <= 32 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(8), lmt_id; 
+        
+      ELSIF k >32 and k <= 36 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(9), lmt_id; 
+        
+      ELSIF k >36 and k <= 40 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(10), lmt_id; 
+        
+     ELSIF k >40 and k <= 44 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(11), lmt_id; 
+        
+     ELSIF k >44 and k <= 48 then
+        execute immediate q'[update lm_lmt_address set street_directional = :var1 where lmt_id = :var2]' using sd(12), lmt_id; 
+    else
+       DBMS_OUTPUT.PUT_LINE( 'k is  : ' );
+      END IF;
+   END LOOP; 
+   CLOSE lla; 
+END; 
+*/
+
+
+
+
+
+/*
+
+
+DECLARE
+  p     NUMBER := 0;
+  c     NUMBER := 0;
+  type street_directional IS VARRAY(12) OF VARCHAR2(15); 
+  sd street_directional; 
+BEGIN
+ sd := street_directional('EX','CN','S','E','W','N','NE','NW','SE','SW','UP','LR');
+  FOR k IN 1..52 LOOP 
+    p :=  mod(k,4);
+    if p = 0 then
+      c := c+1; 
+    end if;
+    case c
+    when 1 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 2 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 3 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 5 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 6 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 7 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 8 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 9 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 10 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 11 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);  
+    when 12 then
+       execute immediate q'[insert into temp_check values(:var1, :var2)]' using k, sd(c);     
+    else
+       DBMS_OUTPUT.PUT_LINE( 'k is  : ' );
+    end case;
+  END LOOP;
+END;
+
+*/
+
+
+
+
+
+/*
+
+DECLARE
+  k NUMBER := 0;
+  lmt_id lm_lmt_address.lmt_id%type;
+  street_directional lm_lmt_address.street_directional%type;
+  CURSOR lla
+  IS
+    SELECT lmt_id,
+      street_directional
+    FROM lm_lmt_Address
+    WHERE lmt_id IN
+      (SELECT * FROM NOT_VALID_STREET_DIRECTION
+      ) ;
+BEGIN
+  OPEN lla;
+  LOOP
+    FETCH lla INTO lmt_id, street_directional;
+    k:= k+1;
+    EXIT
+  WHEN lla%notfound;
+    IF k <= 44 THEN
+      EXECUTE immediate q'[insert into temp_check1 values(:var1, :var2)]' USING lmt_id,street_directional;
+    END IF;
+  END LOOP;
+  CLOSE lla;
+END;
+
+
+*/
+
+
+
+select * from bc_amdocs_pre_publish;
