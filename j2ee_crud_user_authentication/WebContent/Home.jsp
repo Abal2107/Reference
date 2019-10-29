@@ -11,7 +11,9 @@
  <center><h2>Home Page</h2></center>
  <b>User Registration Successful</b>
  <br></br>
- <b>Please <a href="https://krazytech.com/programs/a-login-application-in-java-using-model-view-controllermvc-design-pattern">log-in</a> to continue.</b>
+ <a href="Login.jsp">Login</a> 
+ <br>
+ <a href="Register.jsp">Register</a>
   
 </body>
 </html>
