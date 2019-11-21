@@ -196,5 +196,34 @@ END;
 */
 
 
+-- case queries
 
-select * from bc_amdocs_pre_publish;
+insert into temp_listing_id (
+select li.listing_id  as listing_id, li.customer_id as customer_id, li.listing_source as listing_source, weight
+from
+(select  /*+ parallel*/ listing_id , customer_id, listing_source , 
+case 
+    when listing_source in ('NOC','FTR','NLN','FRP','NLR','FTA','ELT','NLJ','BPA','FIO','EMBARQ','ATT','QWEST','RESIN','VRZN','CSS') then 4
+    when listing_source in ('LLW','LLN','LLM','OEC') then 3
+    when listing_source in ('ALW','ALN','ALM') then 2
+    when listing_source in ('SALSLD','GWEST','ESLSLD','SLDATT','SLDCTL','GEAST','GVAST') then 1
+    else 0
+    end as weight
+
+from listing where last_version_ind = 'Y' and listing_status='N'
+and lni in  ('ASL','ENT','MPL','NPM','LN','WAML','WCML','WJU','YLN')
+ )li
+inner join (select customer_id /*+ parallel*/ from temp_customer_id) tlid 
+on li.customer_id =  tlid.customer_id);
+
+-- select max listing with max weight
+
+insert into temp_lid_cid(
+select customer_id,max(listing_id) /*+parallel(temp_listing_id)*/ from temp_listing_id where (customer_id, weight) in
+(select customer_id , max(weight) /*+parallel(temp_listing_id)*/ from temp_listing_id group by customer_id) group by customer_id  ) ; -- 34,121
+
+
+
+
+
+
