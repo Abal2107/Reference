@@ -224,6 +224,20 @@ select customer_id,max(listing_id) /*+parallel(temp_listing_id)*/ from temp_list
 
 
 
+-- bulk operation using pL SQL
+
+declare 
+type v_cust_id is table of temp_updated.customer_id%type index by pls_integer;
+i v_cust_id;
+begin 
+select customer_id 
+bulk collect into i
+from temp_updated;
+
+forall rec in 1 .. i . count
+update customer set ctcr_dbi_prog_id = 7156 , CTCR_DBI_PROG_DT = sysdate where customer_id = i(rec);
+commit;
+end;
 
 
 
