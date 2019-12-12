@@ -10,6 +10,26 @@ desc tmp_ref_lc_pc_cods;
 
 
 
+grant 
+select,
+insert,
+delete,
+update
+on
+schema.table_name
+to
+schema.
+
+
+create table new_Table as select * from old_Table where 1=0;
+
+
+export as dsv then go to the tables section in the cascading view
+and import the data from the directory into the table.
+
+
+
+
 declare
    type locality_ID IS VARRAY(34) OF NUMBER(9); 
    type post_CODS IS VARRAY(34) OF NUMBER(20); 
